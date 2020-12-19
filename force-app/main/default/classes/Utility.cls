@@ -19,7 +19,7 @@ public with sharing class Utility {
     
     public static final String OPP_DONATION_RECORD_TYPE = 'Donation'; 
     public static final String OPP_MEMBERSHIP_RECORD_TYPE = 'Membership';
-    
+
     public static final String CONTACT_DONOR_RECORD_TYPE = 'Donor';
     public static final String CONTACT_AGENT_RECORD_TYPE = 'Agent';
     public static final String CONTACT_SUPPORTER_RECORD_TYPE = 'Supporter';
@@ -27,6 +27,31 @@ public with sharing class Utility {
     public static final String LEAD_SOURCE_DONATION_REDCROSS_BY = 'Donation.redcross.by';
     
     public static final Set<String> SUCCESS_PAYMENT_TYPES = new Set<String> {'1','4','10'};
+
+    public static final String LEAD_VOLUNTEER_RECORD_TYPE_NAME = 'Volunteer';
+    public static final String LEAD_DONOR_RECORD_TYPE_NAME = 'Donor';
+    public static final String LEAD_DISQUALIFIED_STATUS_NAME = 'Disqualified';
+    public static final String LEAD_OPEN_NOT_CONTACTED_STATUS_NAME = 'Open - Not Contacted';
+
+    public static final Id LEAD_VOLUNTEER_RECORT_TYPE_ID = Schema.SObjectType.Lead.getRecordTypeInfosByName().get(LEAD_VOLUNTEER_RECORD_TYPE_NAME).getRecordTypeId();
+    public static final Id LEAD_DONOR_RECORT_TYPE_ID = Schema.SObjectType.Lead.getRecordTypeInfosByName().get(LEAD_DONOR_RECORD_TYPE_NAME).getRecordTypeId();
+
+    public static final String LEAD_RE_APPEAL_EMAIL_TEMPLATE_SETTING_NAME = 'Lead re-appeal';
+    public static final String LEAD_NEW_VOLUNTEER_EMAIL_TEMPLATE_SETTING_NAME = 'Lead new volunteer';
+
+    public static final String CONTACT_VOLUNTEER_STATUS_ACTIVE_NAME = 'Active';
+    public static final String CONTACT_VOLUNTEER_STATUS_NEW_SIGN_UP_NAME = 'New Sign Up';
+
+    public static final String CONTACT_VOLUNTEER_NEW_SIGN_UP_EMAIL_TEMPLATE_SETTING_NAME = 'Contact volunteer new sign up';
+
+    public static final String CONTACT_VOLUNTEER_WITH_PROTAL_USER_EMAIL_TEMPLATE_SETTING_NAME = 'Contact with portal user';
+    public static final String CONTACT_VOLUNTEER_WITHOUT_PROTAL_USER_EMAIL_TEMPLATE_SETTING_NAME = 'Contact without portal user';
+
+
+    public static final String CUSTOMER_PORTAL_USER_PROFILE_NAME = 'Customer Portal User';
+
+
+
     
     
     private static final String SEPARATOR = ' ';

@@ -1,27 +1,5 @@
 public with sharing class LeadHandler {
 
-    private static final String VOLUNTEER_RECORD_TYPE_NAME = 'Volunteer';
-    private static final String DONOR_RECORD_TYPE_NAME = 'Donor';
-    private static final String LEAD_DISQUALIFIED_STATUS_NAME = 'Disqualified';
-    private static final String LEAD_OPEN_NOT_CONTACTED_STATUS_NAME = 'Open - Not Contacted';
-
-    private static final String CONTACT_VOLUNTEER_STATUS_ACTIVE_NAME = 'Active';
-    private static final String CONTACT_VOLUNTEER_STATUS_NEW_SIGN_UP_NAME = 'New Sign Up';
-    
-    private static final String CUSTOMER_PORTAL_USER_PROFILE_NAME = 'Customer Portal User';
-
-    private static final String LEAD_RE_APPEAL_EMAIL_TEMPLATE_SETTING_NAME = 'Lead re-appeal';
-    private static final String LEAD_NEW_VOLUNTEER_EMAIL_TEMPLATE_SETTING_NAME = 'Lead new volunteer';
-    
-    private static final String CONTACT_VOLUNTEER_NEW_SIGN_UP_EMAIL_TEMPLATE_SETTING_NAME = 'Contact volunteer new sign up';
-
-    private static final String CONTACT_VOLUNTEER_WITH_PROTAL_USER_EMAIL_TEMPLATE_SETTING_NAME = 'Contact with portal user';
-    private static final String CONTACT_VOLUNTEER_WITHOUT_PROTAL_USER_EMAIL_TEMPLATE_SETTING_NAME = 'Contact without portal user';
-
-
-    private static final Id VOLUNTEER_RECORT_TYPE_ID = Schema.SObjectType.Lead.getRecordTypeInfosByName().get(VOLUNTEER_RECORD_TYPE_NAME).getRecordTypeId();
-    private static final Id DONOR_RECORT_TYPE_ID = Schema.SObjectType.Lead.getRecordTypeInfosByName().get(DONOR_RECORD_TYPE_NAME).getRecordTypeId();
-
     private static List<Lead_Setting__mdt> leadSettings = [
         SELECT Lead_Source__c, Lead_Record_Type__c
         FROM Lead_Setting__mdt
@@ -42,9 +20,9 @@ public with sharing class LeadHandler {
     private static void defineLeadRecordType(List<Lead> leads) {
         for (Lead lead : leads) {
             if (isVolunteer(lead)) {
-                lead.RecordTypeId = VOLUNTEER_RECORT_TYPE_ID;
+                lead.RecordTypeId = Utility.LEAD_VOLUNTEER_RECORT_TYPE_ID;
             } else {
-                lead.RecordTypeId = DONOR_RECORT_TYPE_ID;
+                lead.RecordTypeId = Utility.LEAD_DONOR_RECORT_TYPE_ID;
             }
         }
     }
@@ -115,7 +93,7 @@ public with sharing class LeadHandler {
         List<Lead> volunteers = new List<Lead>();
         
         for (Lead lead : leads) {
-            if (lead.RecordTypeId == VOLUNTEER_RECORT_TYPE_ID) {
+            if (lead.RecordTypeId == Utility.LEAD_VOLUNTEER_RECORT_TYPE_ID) {
                 volunteers.add(lead);
             }
         }
@@ -171,19 +149,19 @@ public with sharing class LeadHandler {
         updateContacts(contactsToUpdate);
 
         if (leadsToUpdate.isEmpty() == false) {
-            sendEmailMessage(leadsToUpdate, LEAD_RE_APPEAL_EMAIL_TEMPLATE_SETTING_NAME);
+            sendEmailMessage(leadsToUpdate, Utility.LEAD_RE_APPEAL_EMAIL_TEMPLATE_SETTING_NAME);
         }
 
         if (contactsToUpdate.isEmpty() == false) {
-            sendEmailMessage(contactsToUpdate, CONTACT_VOLUNTEER_NEW_SIGN_UP_EMAIL_TEMPLATE_SETTING_NAME);
+            sendEmailMessage(contactsToUpdate, Utility.CONTACT_VOLUNTEER_NEW_SIGN_UP_EMAIL_TEMPLATE_SETTING_NAME);
         }
 
         if (contactsWithPortalUser.isEmpty() == false) {
-            sendEmailMessage(contactsWithPortalUser,  CONTACT_VOLUNTEER_WITH_PROTAL_USER_EMAIL_TEMPLATE_SETTING_NAME);
+            sendEmailMessage(contactsWithPortalUser,  Utility.CONTACT_VOLUNTEER_WITH_PROTAL_USER_EMAIL_TEMPLATE_SETTING_NAME);
         }
 
         if (contactsWithoutPortalUser.isEmpty() == false) {
-            sendEmailMessage(contactsWithoutPortalUser,  CONTACT_VOLUNTEER_WITHOUT_PROTAL_USER_EMAIL_TEMPLATE_SETTING_NAME);
+            sendEmailMessage(contactsWithoutPortalUser,  Utility.CONTACT_VOLUNTEER_WITHOUT_PROTAL_USER_EMAIL_TEMPLATE_SETTING_NAME);
         }
     }
 
@@ -209,7 +187,7 @@ public with sharing class LeadHandler {
         List<Lead> leadsToUpdate = new List<Lead>();
         
         for (Lead lead : existingLeads) {
-            if (lead.Status == LEAD_DISQUALIFIED_STATUS_NAME) {
+            if (lead.Status == Utility.LEAD_DISQUALIFIED_STATUS_NAME) {
                 leadsToUpdate.add(lead);
             }
         }
@@ -238,7 +216,7 @@ public with sharing class LeadHandler {
         List<Contact> contactsToUpdate = new List<Contact>();
         
         for (Contact contact : existingContacts) {
-            if (contact.GW_Volunteers__Volunteer_Status__c != CONTACT_VOLUNTEER_STATUS_ACTIVE_NAME) {
+            if (contact.GW_Volunteers__Volunteer_Status__c != Utility.CONTACT_VOLUNTEER_STATUS_ACTIVE_NAME) {
                 contactsToUpdate.add(contact);
             }
         }
@@ -278,7 +256,7 @@ public with sharing class LeadHandler {
         return [
             SELECT Id, Contact.Id, Email
             FROM User
-            WHERE Profile.Name = : CUSTOMER_PORTAL_USER_PROFILE_NAME
+            WHERE Profile.Name = : Utility.CUSTOMER_PORTAL_USER_PROFILE_NAME
                 AND ContactId IN : contacts
             LIMIT 10000
         ];
@@ -287,7 +265,7 @@ public with sharing class LeadHandler {
     private static void updateLeads(List<Lead> leads) {
         for (Lead lead : leads) {
             lead.Re_appeal__c = true;
-            lead.Status = LEAD_OPEN_NOT_CONTACTED_STATUS_NAME;
+            lead.Status = Utility.LEAD_OPEN_NOT_CONTACTED_STATUS_NAME;
         }
 
         update leads;
@@ -295,7 +273,7 @@ public with sharing class LeadHandler {
 
     private static void updateContacts(List<Contact> contacts) {
         for (Contact contact : contacts) {
-            contact.GW_Volunteers__Volunteer_Status__c = CONTACT_VOLUNTEER_STATUS_NEW_SIGN_UP_NAME;
+            contact.GW_Volunteers__Volunteer_Status__c = Utility.CONTACT_VOLUNTEER_STATUS_NEW_SIGN_UP_NAME;
         }
 
         update contacts;
@@ -390,7 +368,7 @@ public with sharing class LeadHandler {
         
         delete leadToDeleteById.values();
 
-        sendEmailMessage(leadToSendEmailById.values(), LEAD_NEW_VOLUNTEER_EMAIL_TEMPLATE_SETTING_NAME);
+        sendEmailMessage(leadToSendEmailById.values(), Utility.LEAD_NEW_VOLUNTEER_EMAIL_TEMPLATE_SETTING_NAME);
     }
 
     private static void sendEmailMessage(List<sObject> targetObjects, String emailTemplateName) {
