@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>City__c</fullName>
+    <description>The city to which the city district belongs</description>
+    <externalId>false</externalId>
+    <inlineHelpText>The city to which the city district belongs</inlineHelpText>
+    <label>City</label>
+    <referenceTo>City__c</referenceTo>
+    <relationshipLabel>City Districts</relationshipLabel>
+    <relationshipName>City_Districts</relationshipName>
+    <relationshipOrder>0</relationshipOrder>
+    <reparentableMasterDetail>false</reparentableMasterDetail>
+    <trackTrending>false</trackTrending>
+    <type>MasterDetail</type>
+    <writeRequiresMasterRead>false</writeRequiresMasterRead>
+</CustomField>
