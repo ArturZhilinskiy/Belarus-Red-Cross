@@ -372,36 +372,36 @@ public with sharing class LeadHandler {
     }
 
     private static void sendEmailMessage(List<sObject> targetObjects, String emailTemplateName) {
-        Email_Template_Settings__c emailSetting = Email_Template_Settings__c.getValues(emailTemplateName);
-        if (emailSetting != null) {
-            List<EmailTemplate> templates = [
-                SELECT Id, DeveloperName 
-                FROM EmailTemplate 
-                WHERE DeveloperName = : emailSetting.Email_Template_Name__c
-            ];
-            if (!templates.isEmpty()) {
-                sendEmails(targetObjects, templates[0]);
-            }
-        } 
-    }
-
-    private static void sendEmails(List<sObject> records, EmailTemplate template) {
-        List<Id> targetObjectIds = new List<Id>();
         
-        for(sObject record : records) {
+        List<Id> targetObjectIds = new List<Id>();
+        for (sObject record : targetObjects) {
             if (record.get('Email') != null) {
                 targetObjectIds.add(record.Id);
             }
         }
 
+        Email_Template_Settings__c emailSetting = Email_Template_Settings__c.getValues(emailTemplateName);
+        if (emailSetting != null) {
+            List<EmailTemplate> emailTemplates = [
+                SELECT Id, DeveloperName 
+                FROM EmailTemplate 
+                WHERE DeveloperName = : emailSetting.Email_Template_Name__c
+            ];
+            if (!emailTemplates.isEmpty()) {
+                sendEmails(targetObjectIds, emailTemplates[0].Id);
+            }
+        } 
+    }
+
+    @future
+    private static void sendEmails(List<Id> targetObjectIds, Id templateId) {
         if (!targetObjectIds.isEmpty()) {
             Messaging.MassEmailMessage mail = new Messaging.MassEmailMessage();
             mail.setTargetObjectIds(targetObjectIds);
             mail.setSenderDisplayName('Belarus Red Cross');
-            mail.setTemplateId(template.Id);
+            mail.setTemplateId(templateId);
             Messaging.sendEmail(new Messaging.MassEmailMessage[] { mail });
         }
-        
     }
 
 }
