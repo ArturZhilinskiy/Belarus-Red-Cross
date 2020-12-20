@@ -29,7 +29,10 @@ public with sharing class LeadHandler {
 
     private static Boolean isVolunteer(Lead lead) {
         for (Lead_Setting__mdt leadSetting : leadSettings) {
-            if (leadSetting.Lead_Source__c == lead.LeadSource) {
+            Boolean isVolunteerRecordType = leadSetting.Lead_Record_Type__c == Utility.LEAD_VOLUNTEER_RECORD_TYPE_NAME;
+            Boolean isLeadSourceMatches = leadSetting.Lead_Source__c == lead.LeadSource;
+            
+            if (isVolunteerRecordType && isLeadSourceMatches) {
                 return true;
             }
         }
