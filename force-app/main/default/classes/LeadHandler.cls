@@ -6,15 +6,27 @@ public with sharing class LeadHandler {
     ];
 
     public static void onBeforeInsert(List<Lead> newLeads) {
-        mapFields(newLeads);
+        defineLeadRecordType(newLeads);
         processDuplicates(getVolunters(newLeads));
-        defineLeadAgent(newLeads);
+
+        List<Lead> uniqueLeads = getUniqueLeads(newLeads);
+
+        defineCityWithDistrictAndRegion(uniqueLeads);
+        defineOrganization(uniqueLeads);
+
+        defineLeadAgent(uniqueLeads);
 
     }
 
-    private static void mapFields(List<Lead> leads) {
-        defineLeadRecordType(leads);
-        defineCityWithDistrictAndRegion(leads);
+    private static List<Lead> getUniqueLeads(List<Lead> leads) {
+        List<Lead> uniqueLeads = new List<Lead>();
+        for (Lead lead : leads) {
+            if (lead.Duplicate__c == false) {
+                uniqueLeads.add(lead);
+            }
+        }
+
+        return uniqueLeads;
     }
 
     private static void defineLeadRecordType(List<Lead> leads) {
@@ -90,6 +102,45 @@ public with sharing class LeadHandler {
                 }
             }
         }
+    }
+
+    private static void defineOrganization(List<Lead> leads) {
+
+        List<Id> cityIds = new List<Id>();
+        List<Id> districtIds = new List<Id>();
+
+        for (Lead lead : leads) {
+            if (lead.District__c != null) {
+                districtIds.add(lead.District__c);
+            }
+
+            if (lead.City__c != null) {
+                cityIds.add(lead.City__c);
+            }
+        }
+
+        List<Organization__c> organizations = [
+            SELECT Id, Name, Region__c, District__c, City__c, City_District__c
+            FROM Organization__c
+            WHERE District__c IN : districtIds 
+                AND City__c IN : cityIds 
+            LIMIT 10000
+        ];
+
+        for (Lead lead : leads) {
+            lead.Organization__c = getOrgaizationId(lead, organizations);
+        }
+    }
+
+    private static Id getOrgaizationId(Lead lead, List<Organization__c> organizations) {
+        for (Organization__c organization : organizations) {
+            Boolean isDistrictMatches = organization.District__c == lead.District__c;
+            Boolean isCityMatches = organization.City__c == lead.City__c;
+            if (isDistrictMatches && isCityMatches) {
+                return organization.Id;
+            }       
+        }
+        return null;
     }
 
     private static List<Lead> getVolunters(List<Lead> leads) {
