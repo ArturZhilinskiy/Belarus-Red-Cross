@@ -143,6 +143,8 @@ public with sharing class LeadHandler {
         return null;
     }
 
+
+
     private static List<Lead> getVolunters(List<Lead> leads) {
         List<Lead> volunteers = new List<Lead>();
         
@@ -423,6 +425,79 @@ public with sharing class LeadHandler {
         delete leadToDeleteById.values();
 
         sendEmailMessage(leadToSendEmailById.values(), Utility.LEAD_NEW_VOLUNTEER_EMAIL_TEMPLATE_SETTING_NAME);
+
+        defineCampaign(leadToSendEmailById.values());
+
+    }
+
+    private static void defineCampaign(List<Lead> leads) {
+        List<Campaign> campaigns = getCampaignsForLeads(leads);
+
+        List<CampaignMember> campaignMembers = new List<CampaignMember>();
+        for (Lead lead : leads) {
+            Id campaignId = findCampaignForLead(lead, campaigns);
+            if (campaignId != null) {
+                campaignMembers.add(new CampaignMember(
+                    CampaignId = campaignId,
+                    LeadId = lead.Id
+                ));
+            }
+        }
+        insert campaignMembers;
+    }
+
+    private static List<Campaign> getCampaignsForLeads(List<Lead> leads) {
+        List<String> leadSources = new List<String>();
+        List<Id> regionIds = new List<Id>();
+        List<Id> districtIds = new List<Id>();
+        List<Id> cityIds = new List<Id>();
+        List<Id> cityDistrictIds = new List<Id>();
+
+        for (Lead lead : leads) {
+            leadSources.add(lead.leadSource);
+            if (lead.Region__c != null) {
+                regionIds.add(lead.Region__c);
+            }
+            if (lead.District__c != null) {
+                districtIds.add(lead.District__c);
+            }
+            if (lead.City__c != null) {
+                districtIds.add(lead.City__c);
+            }
+            if (lead.City_District__c != null) {
+                districtIds.add(lead.City_District__c);
+            }
+        }
+
+        return [
+            SELECT Id, Name, Region__c, District__c, City__c, City_District__c, Code__c
+            FROM Campaign
+            WHERE Code__c IN : leadSources 
+                AND (
+                    Region__c IN : regionIds 
+                    OR District__c IN : districtIds 
+                    OR City__c IN : cityIds 
+                    OR City_District__c IN : cityDistrictIds
+                )
+            LIMIT 500000
+        ];
+    }
+
+    private static Id findCampaignForLead(Lead lead, List<Campaign> campaigns) {
+        for (Campaign campaign : campaigns) {
+            Boolean laeadLocationMathesWithCampaignLocation =
+                    lead.LeadSource == campaign.Code__c &&
+                    lead.Region__c == campaign.Region__c &&
+                    lead.District__c == campaign.District__c &&
+                    lead.City__c == campaign.City__c &&
+                    lead.City_District__c == campaign.City_District__c;
+                
+            if(laeadLocationMathesWithCampaignLocation) {
+                return campaign.Id;
+            }
+        }
+
+        return null;
     }
 
     private static void sendEmailMessage(List<sObject> targetObjects, String emailTemplateName) {
@@ -457,5 +532,7 @@ public with sharing class LeadHandler {
             Messaging.sendEmail(new Messaging.MassEmailMessage[] { mail });
         }
     }
+
+
 
 }
