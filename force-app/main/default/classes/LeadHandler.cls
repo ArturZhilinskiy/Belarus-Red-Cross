@@ -529,6 +529,7 @@ public with sharing class LeadHandler {
             mail.setTargetObjectIds(targetObjectIds);
             mail.setSenderDisplayName('Belarus Red Cross');
             mail.setTemplateId(templateId);
+            mail.setSaveAsActivity(false);
             Messaging.sendEmail(new Messaging.MassEmailMessage[] { mail });
         }
     }
