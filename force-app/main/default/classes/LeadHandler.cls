@@ -8,14 +8,12 @@ public with sharing class LeadHandler {
     public static void onBeforeInsert(List<Lead> newLeads) {
         defineLeadRecordType(newLeads);
         processDuplicates(getVolunters(newLeads));
-
         List<Lead> uniqueLeads = getUniqueLeads(newLeads);
-
+        
         defineCityWithDistrictAndRegion(uniqueLeads);
         defineOrganization(uniqueLeads);
 
         defineLeadAgent(uniqueLeads);
-
     }
 
     private static List<Lead> getUniqueLeads(List<Lead> leads) {
@@ -235,6 +233,7 @@ public with sharing class LeadHandler {
             SELECT Id, Status, Email, Re_appeal__c
             FROM Lead
             WHERE Email IN : leadByEmail.keySet()
+                AND IsConverted = false
             LIMIT 10000
         ];
     }
@@ -425,9 +424,7 @@ public with sharing class LeadHandler {
         delete leadToDeleteById.values();
 
         sendEmailMessage(leadToSendEmailById.values(), Utility.LEAD_NEW_VOLUNTEER_EMAIL_TEMPLATE_SETTING_NAME);
-
         defineCampaign(leadToSendEmailById.values());
-
     }
 
     private static void defineCampaign(List<Lead> leads) {
@@ -512,9 +509,9 @@ public with sharing class LeadHandler {
         Email_Template_Settings__c emailSetting = Email_Template_Settings__c.getValues(emailTemplateName);
         if (emailSetting != null) {
             List<EmailTemplate> emailTemplates = [
-                SELECT Id, DeveloperName 
+                SELECT Id, Name, DeveloperName 
                 FROM EmailTemplate 
-                WHERE DeveloperName = : emailSetting.Email_Template_Name__c
+                WHERE Id = : emailSetting.Email_Template_Id__c
             ];
             if (!emailTemplates.isEmpty()) {
                 sendEmails(targetObjectIds, emailTemplates[0].Id);
