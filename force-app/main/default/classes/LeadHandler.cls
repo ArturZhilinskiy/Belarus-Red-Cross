@@ -1,5 +1,7 @@
 public with sharing class LeadHandler {
 
+    private static final String ORG_WIDE_EMAIL_ADDRESS = 'f2f@redcross.by';
+
     private static List<Lead_Setting__mdt> leadSettings = [
         SELECT Lead_Source__c, Lead_Record_Type__c
         FROM Lead_Setting__mdt
@@ -11,6 +13,7 @@ public with sharing class LeadHandler {
         List<Lead> uniqueLeads = getUniqueLeads(newLeads);
         
         defineCityWithDistrictAndRegion(uniqueLeads);
+        
         defineOrganization(uniqueLeads);
 
         defineLeadAgent(uniqueLeads);
@@ -50,6 +53,7 @@ public with sharing class LeadHandler {
     }
 
     private static void defineCityWithDistrictAndRegion(List<Lead> leads) {
+        System.debug(JSON.serializePretty(leads));
         Set<String> regions = new Set<String>();
         Set<String> cities = new Set<String>();
 
@@ -84,6 +88,8 @@ public with sharing class LeadHandler {
                 defineLeadLocation(lead, districtsByRegionName.get(lead.Web2Lead_Region__c));
             }
         }
+
+        System.debug(JSON.serializePretty(leads));
 
     }
 
@@ -409,22 +415,30 @@ public with sharing class LeadHandler {
     }
 
     public static void onAfterInsert(List<Lead> newLeads) {
-        Map<Id, Lead> leadToDeleteById = new Map<Id, Lead>();
-        Map<Id, Lead> leadToSendEmailById = new Map<Id, Lead>();
+        List<Lead> duplicates = new List<Lead>();
+        
+        List<Lead> volunteers = new List<Lead>();
+        List<Lead> newLeadRecords = new List<Lead>();
+
 
         for (Lead lead : newLeads) {
             if (lead.Duplicate__c == true) {
-                Lead leadCopy = lead.clone(true, false, false, false);
-                leadToDeleteById.put(leadCopy.Id, leadCopy);
+                duplicates.add(lead);
             } else {
-                leadToSendEmailById.put(lead.Id, lead);
+                newLeadRecords.add(lead);
+                
+                if (isVolunteer(lead)) {
+                    volunteers.add(lead);
+                }
             }
         }
         
-        delete leadToDeleteById.values();
+        duplicates = [SELECT Id FROM Lead WHERE Id IN :duplicates LIMIT 10000];
+        System.debug(duplicates.size());
+        delete duplicates;
 
-        sendEmailMessage(leadToSendEmailById.values(), Utility.LEAD_NEW_VOLUNTEER_EMAIL_TEMPLATE_SETTING_NAME);
-        defineCampaign(leadToSendEmailById.values());
+        sendEmailMessage(volunteers, Utility.LEAD_NEW_VOLUNTEER_EMAIL_TEMPLATE_SETTING_NAME);
+        defineCampaign(newLeadRecords);
     }
 
     private static void defineCampaign(List<Lead> leads) {
@@ -521,13 +535,21 @@ public with sharing class LeadHandler {
 
     @future
     private static void sendEmails(List<Id> targetObjectIds, Id templateId) {
+    
+        OrgWideEmailAddress wideEmailAdress = [
+            SELECT Id, Address 
+            FROM OrgWideEmailAddress 
+            WHERE Address = :ORG_WIDE_EMAIL_ADDRESS 
+            LIMIT 1
+        ];
+        
         if (!targetObjectIds.isEmpty()) {
-            Messaging.MassEmailMessage mail = new Messaging.MassEmailMessage();
-            mail.setTargetObjectIds(targetObjectIds);
-            mail.setSenderDisplayName('Belarus Red Cross');
-            mail.setTemplateId(templateId);
-            mail.setSaveAsActivity(false);
-            Messaging.sendEmail(new Messaging.MassEmailMessage[] { mail });
+            Messaging.MassEmailMessage massEmailMessage = new Messaging.MassEmailMessage();
+            massEmailMessage.setTargetObjectIds(targetObjectIds);
+            massEmailMessage.setReplyTo(wideEmailAdress.Address);
+            massEmailMessage.setTemplateId(templateId);
+            massEmailMessage.setSaveAsActivity(false);
+            Messaging.sendEmail(new Messaging.MassEmailMessage[] { massEmailMessage });
         }
     }
 

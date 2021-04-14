@@ -12,7 +12,7 @@ global class LandingAmountWebservice {
         } else sendResponse('Incorrect resource query param!');
     }
 
-    static Object getTotalPayments(String requestBody) {
+    /*static Object getTotalPayments(String requestBody) {
         String siteOrder = '%' + requestBody + '%';
         List<AggregateResult> paidOppPayments = [
             SELECT SUM(npe01__Payment_Amount__c)
@@ -24,9 +24,21 @@ global class LandingAmountWebservice {
                         WHERE SiteOrderId__c LIKE :siteOrder
                             AND CreatedDate >= :FROM_DATE
                     )
-        ];
+        ];*/
 
-        return paidOppPayments[0]?.get('expr0');
+//hotfix by Eugene K.
+        static Object getTotalPayments(String requestBody) {
+            String siteOrder = '%' + requestBody + '%';
+            List<AggregateResult> paidOppPayments = [
+                    SELECT SUM(Amount__c)
+                    FROM DonationStaging__c
+                    WHERE (PaymentType__c = '1' OR PaymentType__c = '4')
+                    AND SiteOrderId__c LIKE :siteOrder
+                    AND CreatedDate >= :FROM_DATE
+            ];
+
+
+            return paidOppPayments[0].get('expr0');
     }
 
     static void sendResponse(Object serviceResponse) {

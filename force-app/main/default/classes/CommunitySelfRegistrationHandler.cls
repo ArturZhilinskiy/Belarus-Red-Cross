@@ -5,6 +5,7 @@ global without sharing class CommunitySelfRegistrationHandler implements Auth.Co
 	private final String[] NUMBER_CHARS = '1234567890'.split('');
 	private final String[] SPECIAL_CHARS = '!#$%-_=+<>'.split('');
 
+
 	global Id createUser(Id accountId, Id profileId, Map<SObjectField, String> registrationAttributes, String password) {
 		User user = new User();
 		
@@ -15,19 +16,18 @@ global without sharing class CommunitySelfRegistrationHandler implements Auth.Co
 
         String email = user.Email;
         System.debug(email);
+		System.debug(JSON.serializePretty(user));
 		
 		List<User> users = getUsers(email);
 
 		if (users.isEmpty() == false) {
-			//generate exception
-			//show message - you already have an account
+			throw new Auth.DiscoveryCustomErrorException(System.Label.CommunityUserAlreadyExistsMessage);
 		}
 
 		List<Contact> contacts = getContacts(email);
 
-		if (contacts.isEmpty() == false) {
-			//generate exception
-			//show message - contact redcross support
+		if (contacts.isEmpty()) {
+			throw new Auth.DiscoveryCustomErrorException(System.Label.NoSuchContactRecordMessage);
 		}
 
         user = generateUser(user, contacts[0], profileId);
@@ -47,6 +47,7 @@ global without sharing class CommunitySelfRegistrationHandler implements Auth.Co
 			SELECT Id, FirstName, LastName, Email, AccountId
 			FROM Contact 
 			WHERE Email = :email
+				AND Id NOT IN (SELECT ContactId FROM User)
 			LIMIT 1
 		];
 	}
@@ -67,8 +68,8 @@ global without sharing class CommunitySelfRegistrationHandler implements Auth.Co
 		user.Alias = contact.FirstName.substring(0, 1).toLowerCase() + contact.LastName.substring(0, 3).toLowerCase();
 		user.CommunityNickname = contact.FirstName + ' ' + contact.LastName;
 		user.ContactId = contact.Id;
-		user.UserName = contact.Email + generateRandomInt(1000);
-		user.languagelocalekey = UserInfo.getLocale();
+		user.UserName = contact.Email + '.redcross.by';
+		user.languagelocalekey = UserInfo.getLanguage();
 		user.localesidkey = UserInfo.getLocale();
 		user.emailEncodingKey = 'UTF-8';
 		user.timeZoneSidKey = UserInfo.getTimezone().getID();

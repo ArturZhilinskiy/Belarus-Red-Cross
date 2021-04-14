@@ -1,0 +1,13 @@
+<template>
+    <template if:true={mediaData}>
+        <div class="social-media">
+            <ul class="social-network social-circle slds-float_right">
+            <li><a class="icoFacebook" href={mediaData.Facebook_Link} title="Facebook"><i class="fab fa-facebook-f"></i></a></li>
+            <li><a class="icoInstagram" href={mediaData.Instagram_Link} title="Instagram"><i class="fab fa-instagram"></i></a></li>
+            <li><a class="icoVK" href={mediaData.VK_Link} title="VK"><i class="fab fa-vk"></i></a></li>
+            <li><a class="icoTelegram" href={mediaData.Telegram_Link} title="Telegram"><i class="fab fa-telegram-plane"></i></a></li>
+            <li><a class="icoViber" href={mediaData.Viber_Link} title="Viber"><i class="fab fa-viber"></i></a></li>
+            </ul>
+        </div>
+    </template>
+</template>

@@ -141,6 +141,44 @@ public with sharing class TestDataFactory {
         card.Contact__c = contId;
         return card;
     }
+
+    public static Campaign generateCampaign(String name, Boolean isActive) {
+        Campaign campaign = new Campaign (
+                Name = name,
+                IsActive = isActive
+        );
+        return campaign;
+    }
+
+    public static GW_Volunteers__Volunteer_Job__c generateVolunteerJob(String name, String campaignId, String skills, String description, Map<String, String> loc, Boolean webDisplay) {
+        GW_Volunteers__Volunteer_Job__c volunteerJob = new GW_Volunteers__Volunteer_Job__c (
+                Name = name,
+                GW_Volunteers__Campaign__c = campaignId,
+                GW_Volunteers__Display_on_Website__c = webDisplay,
+                GW_Volunteers__Skills_Needed__c = skills,
+                Job_Start__c = System.now(),
+                Job_End__c = System.now().addHours(1),
+                Organization__c = loc.get('org'),
+                Region__c = loc.get('region'),
+                City__c = loc.get('city'),
+                District__c = loc.get('district'),
+                City_District__c = loc.get('cityDistrict'),
+                Street__c = loc.get('street'),
+                GW_Volunteers__Description__c = description
+        );
+        return volunteerJob;
+    }
+
+    public static GW_Volunteers__Volunteer_Hours__c generateVolunteerHours(String currContact, String status, String jobId) {
+        GW_Volunteers__Volunteer_Hours__c volunteerHours = new GW_Volunteers__Volunteer_Hours__c (
+                GW_Volunteers__Volunteer_Job__c = jobId,
+                GW_Volunteers__Contact__c = currContact,
+                GW_Volunteers__Status__c = status,
+                GW_Volunteers__Number_of_Volunteers__c = 1,
+                GW_Volunteers__Start_Date__c = Date.today()
+        );
+        return volunteerHours;
+    }
     
     private static DonationStaging__c generateDefaultStaging(String customerId, String siteOrderId, String transactionId) {
         DonationStaging__c staging = new DonationStaging__c();
@@ -165,5 +203,5 @@ public with sharing class TestDataFactory {
         staging.PaymentType__c = '3';
         return staging;
     }
-    
+
 }

@@ -1,0 +1,114 @@
+.social-media{
+  padding: 0 0 30px 0;
+  margin: -10px 0;
+}
+
+.social-network-container {
+  margin: auto;
+  padding: 0 0.5rem;
+  text-align: center;
+}
+
+ul.social-network {
+  list-style: none;
+  display: inline;
+  margin: auto;
+}
+
+ul.social-network li {
+  display: inline;
+  margin: 0 5px;
+}
+
+/* footer social icons */
+.social-network a.icoFacebook:hover {
+  background-color: #3B5998;
+}
+.social-network a.icoTelegram:hover {
+  background-color: #0088cc;
+}
+.social-network a.icoViber:hover {
+  background-color: #665CAC;
+}
+.social-network a.icoVK:hover {
+  background-color: #2787F5;
+}
+.social-network a.icoInstagram:hover {
+  background: #f09433;
+  background: -moz-linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+  background: -webkit-linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+  background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#f09433", endColorstr="#bc1888", GradientType=1);
+}
+
+.social-circle li a {
+  display: inline-block;
+  position: relative;
+  margin: 0 auto 0 auto;
+  -moz-border-radius: 50%;
+  -webkit-border-radius: 50%;
+  border-radius: 50%;
+  border-width: 1px;
+  border-style: solid;
+  border-color: #C2C2C2;
+  text-align: center;
+  width: 30px;
+  height: 30px;
+  font-size: 15px;
+}
+
+.social-circle li i {
+  margin: 0;
+  line-height: 30px;
+  text-align: center;
+}
+
+.social-circle li a:hover i, .triggeredHover {
+  -moz-transform: rotate(360deg);
+  -webkit-transform: rotate(360deg);
+  -ms--transform: rotate(360deg);
+  transform: rotate(360deg);
+  -webkit-transition: all 0.2s;
+  -moz-transition: all 0.2s;
+  -o-transition: all 0.2s;
+  -ms-transition: all 0.2s;
+  transition: all 0.2s;
+  color:#fff;
+}
+
+.social-circle li a:hover {
+    border-color: #fff;
+}
+
+.social-circle i {
+  color:#C2C2C2;
+  -webkit-transition: all 0.8s;
+  -moz-transition: all 0.8s;
+  -o-transition: all 0.8s;
+  -ms-transition: all 0.8s;
+  transition: all 0.8s;
+}
+
+@media screen and (max-width: 767px) {
+  ul.social-network li {
+    display: block;
+    margin: 5px;
+  }
+
+  .social-circle li a {
+    width: 30px;
+    height: 30px;
+    font-size: 16px;
+  }
+
+  .social-circle li i {
+    line-height: 30px;
+  }
+  
+  .footer_content {
+    width: 100%;
+  }
+  .footer_content p {
+    margin: 0 auto 0 0;
+  }
+}

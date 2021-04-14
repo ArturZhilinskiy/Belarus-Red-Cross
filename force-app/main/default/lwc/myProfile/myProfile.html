@@ -1,0 +1,63 @@
+<template>
+    <div class="slds-grid slds-gutters">
+            <div class="slds-col slds-size_1-of-2 slds-p-bottom_large slds-p-left_large">
+                <lightning-record-view-form
+                    record-id={contactId}
+                    object-api-name="Contact">
+                    <lightning-output-field field-name="Name"></lightning-output-field>
+                    <lightning-output-field field-name="Birthdate"></lightning-output-field>
+                    <lightning-output-field field-name="Phone"></lightning-output-field>
+                    <lightning-output-field field-name="Email"></lightning-output-field>
+                    <lightning-output-field field-name="Volunteer_Type__c"></lightning-output-field>
+                    <lightning-output-field field-name="GW_Volunteers__Volunteer_Skills__c"></lightning-output-field>
+                    <lightning-output-field field-name="GW_Volunteers__Volunteer_Availability__c"></lightning-output-field>
+                </lightning-record-view-form>
+            </div>
+            <div class="slds-col slds-size_1-of-2 slds-p-bottom_large slds-p-left_large">
+                <label class="slds-form-element__label slds-no-flex" for="contactOrg">{contactRecord.organizationLabel}</label>
+                <p><lightning-formatted-text id="contactOrg" value={contactRecord.organizationName}></lightning-formatted-text></p>
+                <c-lwc-lookup object-api-name="Region__c"
+                            class="lookup_Region__c"
+                            lookup-label={contactRecord.regionLabel}
+                            selected-record-id={contactRecord.regionId}
+                            selected-value={contactRecord.regionName}
+                            onvalueselected={handleRegionSelected}>
+                </c-lwc-lookup>
+                <div if:true={contactErrors.Region__c} role="alert" class="slds-form-element__help slds-text-color_error">{contactErrors.Region__c}</div>
+                <c-lwc-lookup object-api-name="District__c"
+                            class="lookup_District__c"
+                            parent-object="Region__c"
+                            parent-object-id={parentObj.Region__c}
+                            lookup-label={contactRecord.districtLabel}
+                            selected-record-id={contactRecord.districtId}
+                            selected-value={contactRecord.districtName}
+                            onvalueselected={handleDistrictSelected}>
+                </c-lwc-lookup>
+                <div if:true={contactErrors.District__c} role="alert" class="slds-form-element__help slds-text-color_error">{contactErrors.District__c}</div>
+                <c-lwc-lookup object-api-name="City__c"
+                            class="lookup_City__c"
+                            parent-object="District__c"
+                            parent-object-id={parentObj.District__c}
+                            lookup-label={contactRecord.cityLabel}
+                            selected-record-id={contactRecord.cityId}
+                            selected-value={contactRecord.cityName}
+                            onvalueselected={handleCitySelected}>
+                </c-lwc-lookup>
+                <div if:true={contactErrors.City__c} role="alert" class="slds-form-element__help slds-text-color_error">{contactErrors.City__c}</div>
+                <c-lwc-lookup object-api-name="City_District__c"
+                            class="lookup_City_District__c"
+                            parent-object="City__c"
+                            parent-object-id={parentObj.City__c}
+                            lookup-label={contactRecord.cityDistrictLabel}
+                            selected-record-id={contactRecord.cityDistrictId}
+                            selected-value={contactRecord.cityDistrictName}
+                            onvalueselected={handleCityDistrictSelected}>
+                </c-lwc-lookup>
+                <div if:true={contactErrors.City_District__c} role="alert" class="slds-form-element__help slds-text-color_error">{contactErrors.City_District__c}</div>
+                <lightning-input type="text" class='address' label={contactRecord.addressLabel} value={contactRecord.address}></lightning-input>
+                <div class="update_btn">
+                    <lightning-button variant="destructive" label={saveBtnLabel} onclick={updateContact} class="slds-m-left_x-small"></lightning-button>
+                </div>
+            </div>
+    </div>
+</template>

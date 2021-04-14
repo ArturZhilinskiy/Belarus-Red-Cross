@@ -1,0 +1,15 @@
+<template>
+    <ul class="slds-listbox slds-listbox_vertical" role="presentation" >  
+        <template if:true={volunteersMessage}>  
+        <div class="slds-p-left_large">{volunteersMessage}</div>
+        </template>
+        <template if:true={totalVolunteers}>  
+            <p class="slds-text-heading_small slds-text-color_destructive slds-p-bottom_small slds-p-horizontal_small">{totalMessage}{totalVolunteers}</p>
+        </template>  
+        <template for:each={volunteersList} for:item="record">
+            <li id={record.Id} key={record.Id} role="presentation" class="slds-listbox__item">  
+                <p class="slds-p-horizontal_small">{record.GW_Volunteers__Contact__r.Name}</p>
+            </li>  
+        </template>  
+    </ul>    
+</template>

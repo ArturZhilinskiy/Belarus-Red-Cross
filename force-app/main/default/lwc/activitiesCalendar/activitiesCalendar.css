@@ -1,0 +1,15 @@
+.modal_eventContent {
+    background-color: var(--sds-c-modal-content-color-background, var(--sds-c-modal-color-background, var(--lwc-colorBackgroundAlt,rgb(255, 255, 255))));
+    color: var(--sds-c-modal-content-text-color, var(--sds-c-modal-text-color));
+    overflow: hidden;
+    overflow-y: auto;
+}
+.modal_eventTab {
+    border-radius: 0;
+    border-width: 0;
+    height: 30vh;
+}
+ul {
+    border-radius: 0 !important;
+    border-width: 0 !important;
+}

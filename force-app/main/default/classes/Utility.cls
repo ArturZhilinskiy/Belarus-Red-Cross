@@ -12,6 +12,8 @@ public with sharing class Utility {
     
     public enum LogLevels {FATAL, ERROR, WARNING, INFO, DEBUG}
     
+
+    
     public static final String STAGING_API_NAME = 'DonationStaging__c';  
     public static final String STAGING_RECORD_TYPE_INITIATION = 'Initiation';
     public static final String STAGING_RECORD_TYPE_RECURRING = 'Recurring';

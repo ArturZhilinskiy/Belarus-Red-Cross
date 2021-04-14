@@ -1,0 +1,30 @@
+<template>
+    <template if:true={footerData}>
+    <div class="footer">
+      <div class="slds-grid footer_wrapper">
+        <div class="slds-col slds-size_4-of-12 social-network-container">
+          <ul class="social-network social-circle">
+            <li><a class="icoFacebook" href={footerData.Facebook_Link} title="Facebook"><i class="fab fa-facebook-f"></i></a></li>
+            <li><a class="icoInstagram" href={footerData.Instagram_Link} title="Instagram"><i class="fab fa-instagram"></i></a></li>
+            <li><a class="icoVK" href={footerData.VK_Link} title="VK"><i class="fab fa-vk"></i></a></li>
+            <li><a class="icoTelegram" href={footerData.Telegram_Link} title="Telegram"><i class="fab fa-telegram-plane"></i></a></li>
+            <li><a class="icoViber" href={footerData.Viber_Link} title="Viber"><i class="fab fa-viber"></i></a></li>
+          </ul>
+        </div>
+        <div class="slds-col slds-size_8-of-12">
+          <div class="footer_content">
+            <p>{footerData.BRC_Name}</p>
+            <p>{footerData.Address}</p>
+            <p><a href={footerData.Site}>{footerData.Site_Name}</a></p>
+            <p><a href={footerData.All_BRC_Addresses_Link}>{footerData.All_BRC_Addresses_Text}</a></p>
+          </div>
+          <div class="footer_content">
+            <p>{footerData.Portal_QA_Text}</p>
+            <p><a href={footerData.Portal_QA_Email_Link}>{footerData.Portal_QA_Email}</a></p>
+            <p><a href={footerData.Portal_QA_Phone_Link}>{footerData.Portal_QA_Phone}</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+    </template>
+</template>
