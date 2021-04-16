@@ -12,8 +12,6 @@ public with sharing class Utility {
     
     public enum LogLevels {FATAL, ERROR, WARNING, INFO, DEBUG}
     
-
-    
     public static final String STAGING_API_NAME = 'DonationStaging__c';  
     public static final String STAGING_RECORD_TYPE_INITIATION = 'Initiation';
     public static final String STAGING_RECORD_TYPE_RECURRING = 'Recurring';
@@ -43,6 +41,7 @@ public with sharing class Utility {
 
     public static final String CONTACT_VOLUNTEER_STATUS_ACTIVE_NAME = 'Active';
     public static final String CONTACT_VOLUNTEER_STATUS_NEW_SIGN_UP_NAME = 'New Sign Up';
+    public static final String CONTACT_VOLUNTEER_STATUS_INACTIVE_NAME = 'Inactive';
 
     public static final String CONTACT_VOLUNTEER_NEW_SIGN_UP_EMAIL_TEMPLATE_SETTING_NAME = 'Contact volunteer new sign up';
 
@@ -50,7 +49,7 @@ public with sharing class Utility {
     public static final String CONTACT_VOLUNTEER_WITHOUT_PROTAL_USER_EMAIL_TEMPLATE_SETTING_NAME = 'Contact without portal user';
 
 
-    public static final String CUSTOMER_PORTAL_USER_PROFILE_NAME = 'Customer Portal User';
+    public static final String VOLUNTEER_PORTAL_USER_PROFILE_NAME = 'Volunteer Portal User';
 
 
 
