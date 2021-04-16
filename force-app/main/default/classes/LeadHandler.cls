@@ -52,8 +52,7 @@ public with sharing class LeadHandler {
         return false;
     }
 
-    private static void defineCityWithDistrictAndRegion(List<Lead> leads) {
-        System.debug(JSON.serializePretty(leads));
+    private static List<Lead> defineCityWithDistrictAndRegion(List<Lead> leads) {
         Set<String> regions = new Set<String>();
         Set<String> cities = new Set<String>();
 
@@ -89,8 +88,7 @@ public with sharing class LeadHandler {
             }
         }
 
-        System.debug(JSON.serializePretty(leads));
-
+        return leads;
     }
 
     private static void defineLeadLocation(Lead lead, List<District__c> districts) {
@@ -206,7 +204,7 @@ public with sharing class LeadHandler {
 
         }
         updateLeads(leadsToUpdate);
-        updateContacts(contactsToUpdate);
+        updateContacts(contactsToUpdate, leadByEmail);
 
         if (leadsToUpdate.isEmpty() == false) {
             sendEmailMessage(leadsToUpdate, Utility.LEAD_RE_APPEAL_EMAIL_TEMPLATE_SETTING_NAME);
@@ -266,7 +264,15 @@ public with sharing class LeadHandler {
 
     private static List<Contact> findExisitingContacts(Map<String, Lead> leadByEmail) {
         return [
-            SELECT Id, RecordTypeId, Email, GW_Volunteers__Volunteer_Status__c
+            SELECT 
+                Id, 
+                RecordTypeId, 
+                Email, 
+                GW_Volunteers__Volunteer_Status__c, 
+                City__c, 
+                City_District__c, 
+                Region__c, 
+                District__c
             FROM Contact
             WHERE Email IN : leadByEmail.keySet()
             LIMIT 10000
@@ -317,7 +323,7 @@ public with sharing class LeadHandler {
         return [
             SELECT Id, Contact.Id, Email
             FROM User
-            WHERE Profile.Name = : Utility.CUSTOMER_PORTAL_USER_PROFILE_NAME
+            WHERE Profile.Name = : Utility.VOLUNTEER_PORTAL_USER_PROFILE_NAME
                 AND ContactId IN : contacts
             LIMIT 10000
         ];
@@ -332,9 +338,18 @@ public with sharing class LeadHandler {
         update leads;
     }
 
-    private static void updateContacts(List<Contact> contacts) {
+    private static void updateContacts(List<Contact> contacts, Map<String, Lead> leadByEmail) {
+
+        List<Lead> leads = defineCityWithDistrictAndRegion(leadByEmail.values());
+        Map<String, Lead> leadRecordByEmail = collectLeadByEmail(leads);
+
         for (Contact contact : contacts) {
+            Lead lead = leadRecordByEmail.get(contact.Email);
             contact.GW_Volunteers__Volunteer_Status__c = Utility.CONTACT_VOLUNTEER_STATUS_NEW_SIGN_UP_NAME;
+            contact.City__c = lead.City__c;
+            contact.City_District__c = lead.City_District__c;
+            contact.Region__c = lead.Region__c;
+            contact.District__c = lead.District__c;
         }
 
         update contacts;
